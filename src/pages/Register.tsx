@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import type { SyntheticEvent } from "react";
+import { getErrorMessage } from "../utils/authErrors";
 
 export function Register() {
   const [email, setEmail] = useState("");
@@ -59,15 +60,3 @@ const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
   );
 }
 
-function getErrorMessage(code: string): string {
-  switch (code) {
-    case "auth/email-already-in-use":
-      return "Ya existe una cuenta con ese correo.";
-    case "auth/invalid-email":
-      return "El correo electrónico no es válido.";
-    case "auth/weak-password":
-      return "La contraseña debe tener al menos 6 caracteres.";
-    default:
-      return "Ocurrió un error al crear la cuenta. Intenta de nuevo.";
-  }
-}

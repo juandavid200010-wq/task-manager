@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import type { SyntheticEvent } from "react";
+import { getErrorMessage } from "../utils/authErrors";
 
 
 export function Login() {
@@ -76,17 +77,3 @@ export function Login() {
   );
 }
 
-function getErrorMessage(code: string): string {
-  switch (code) {
-    case "auth/invalid-email":
-      return "El correo electrónico no es válido.";
-    case "auth/user-not-found":
-    case "auth/wrong-password":
-    case "auth/invalid-credential":
-      return "Correo o contraseña incorrectos.";
-    case "auth/too-many-requests":
-      return "Demasiados intentos fallidos. Intenta más tarde.";
-    default:
-      return "Ocurrió un error al iniciar sesión. Intenta de nuevo.";
-  }
-}
