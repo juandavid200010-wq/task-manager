@@ -7,7 +7,7 @@ import { sendTaskSummary } from "../services/email";
 
 export function Tasks() {
   const { logout, user } = useAuth();
-  const { tasks, loading, error, addTask, removeTask, toggleComplete } = useTasks();
+  const { tasks, loading, error, addTask, editTask, removeTask, toggleComplete } = useTasks();
   const [sending, setSending] = useState(false);
   const [emailStatus, setEmailStatus] = useState("");
 
@@ -40,7 +40,12 @@ export function Tasks() {
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {!loading && (
-        <TaskList tasks={tasks} onToggle={toggleComplete} onDelete={removeTask} />
+        <TaskList
+  tasks={tasks}
+  onToggle={toggleComplete}
+  onDelete={removeTask}
+  onEdit={editTask}
+/>
       )}
 
       <button onClick={handleSendSummary} disabled={sending || tasks.length === 0}>

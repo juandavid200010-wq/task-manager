@@ -11,12 +11,12 @@ const mockTasks: Task[] = [
 
 describe("TaskList", () => {
     it("muestra un mensaje cuando no hay tareas", () => {
-        render(<TaskList tasks={[]} onToggle={vi.fn()} onDelete={vi.fn()} />);
+        render(<TaskList tasks={[]} onToggle={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} />);
         expect(screen.getByText("No tienes tareas todavía.")).toBeInTheDocument();
     });
 
     it("renderiza cada tarea con su título", () => {
-        render(<TaskList tasks={mockTasks} onToggle={vi.fn()} onDelete={vi.fn()} />);
+        render(<TaskList tasks={mockTasks} onToggle={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} />);
         expect(screen.getByText("Tarea 1")).toBeInTheDocument();
         expect(screen.getByText("Tarea 2")).toBeInTheDocument();
     });
@@ -25,7 +25,7 @@ describe("TaskList", () => {
         const user = userEvent.setup();
         const onDelete = vi.fn();
 
-        render(<TaskList tasks={mockTasks} onToggle={vi.fn()} onDelete={onDelete} />);
+        render(<TaskList tasks={mockTasks} onToggle={vi.fn()} onDelete={onDelete} onEdit={vi.fn()} />);
 
         const deleteButtons = screen.getAllByRole("button", { name: /eliminar/i });
         await user.click(deleteButtons[0]);
@@ -37,7 +37,7 @@ describe("TaskList", () => {
         const user = userEvent.setup();
         const onToggle = vi.fn();
 
-        render(<TaskList tasks={mockTasks} onToggle={onToggle} onDelete={vi.fn()} />);
+        render(<TaskList tasks={mockTasks} onToggle={onToggle} onDelete={vi.fn()} onEdit={vi.fn()}/>);
 
         const checkboxes = screen.getAllByRole("checkbox");
         await user.click(checkboxes[0]);
