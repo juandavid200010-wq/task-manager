@@ -1,17 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-
-if (getApps().length === 0) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/^"|"$/g, "").replace(/\\n/g, "\n"),
-    }),
-  });
-}
 
 const sesClient = new SESClient({
   region: process.env.AWS_REGION,
@@ -24,6 +12,22 @@ const sesClient = new SESClient({
 interface TaskSummary {
   title: string;
   completed: boolean;
+}
+
+async function getEmailFromToken(idToken: string): Promise<string | null> {
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.VITE_FIREBASE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    }
+  );
+
+  if (!response.ok) return null;
+
+  const data = (await response.json()) as { users?: { email?: string }[] };
+  return data.users?.[0]?.email ?? null;
 }
 
 function escapeHtml(text: string): string {
@@ -58,23 +62,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(401).json({ error: "No autenticado" });
   }
 
-  let userEmail: string | undefined;
-  try {
-    const decoded = await getAuth().verifyIdToken(authHeader.slice(7));
-    userEmail = decoded.email;
-  } catch {
+  const userEmail = await getEmailFromToken(authHeader.slice(7));
+  if (!userEmail) {
     return res.status(401).json({ error: "Token inválido" });
   }
 
-  if (!userEmail) {
-    return res.status(400).json({ error: "El usuario no tiene correo asociado" });
-  }
-
-  const body = req.body as { tasks?: unknown } | undefined;
-  if (!isValidTasks(body?.tasks)) {
+  const tasks: unknown = (req.body as { tasks?: unknown } | undefined)?.tasks;
+  if (!isValidTasks(tasks)) {
     return res.status(400).json({ error: "Datos inválidos" });
   }
-  const tasks = body.tasks;
 
   const completedCount = tasks.filter((t) => t.completed).length;
   const pendingCount = tasks.length - completedCount;
