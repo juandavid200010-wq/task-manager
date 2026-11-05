@@ -1,11 +1,14 @@
 export async function sendTaskSummary(
-  toEmail: string,
+  idToken: string,
   tasks: { title: string; completed: boolean }[]
 ): Promise<void> {
   const response = await fetch("/api/send-summary", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ toEmail, tasks }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({ tasks }),
   });
 
   if (!response.ok) {

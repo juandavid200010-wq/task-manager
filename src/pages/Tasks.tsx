@@ -11,23 +11,24 @@ export function Tasks() {
   const [sending, setSending] = useState(false);
   const [emailStatus, setEmailStatus] = useState("");
 
-  const handleSendSummary = async () => {
-    if (!user?.email) return;
-    setSending(true);
-    setEmailStatus("");
-    try {
-      await sendTaskSummary(
-        user.email,
-        tasks.map((t) => ({ title: t.title, completed: t.completed }))
-      );
-      setEmailStatus("Resumen enviado correctamente.");
-    } catch (err) {
-      setEmailStatus("Error al enviar el resumen.");
-      console.error(err);
-    } finally {
-      setSending(false);
-    }
-  };
+const handleSendSummary = async () => {
+  if (!user) return;
+  setSending(true);
+  setEmailStatus("");
+  try {
+    const token = await user.getIdToken();
+    await sendTaskSummary(
+      token,
+      tasks.map((t) => ({ title: t.title, completed: t.completed }))
+    );
+    setEmailStatus("Resumen enviado correctamente.");
+  } catch (err) {
+    setEmailStatus("Error al enviar el resumen.");
+    console.error(err);
+  } finally {
+    setSending(false);
+  }
+};
 
   return (
     <div>
