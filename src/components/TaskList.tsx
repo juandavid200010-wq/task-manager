@@ -48,54 +48,75 @@ function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
 
   if (editing) {
     return (
-      <li>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Título"
-        />
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción"
-        />
-        <button onClick={handleSave} disabled={saving}>
-          {saving ? "Guardando..." : "Guardar"}
-        </button>
-        <button onClick={handleCancel} disabled={saving}>
-          Cancelar
-        </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+      <li className="task-item">
+        <div className="task-edit">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Título"
+          />
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Descripción"
+          />
+        </div>
+        <div className="task-edit-actions">
+          <button
+            className="btn btn-primary btn-small"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? "Guardando..." : "Guardar"}
+          </button>
+          <button
+            className="btn btn-secondary btn-small"
+            onClick={handleCancel}
+            disabled={saving}
+          >
+            Cancelar
+          </button>
+        </div>
+        {error && <p className="message error">{error}</p>}
       </li>
     );
   }
 
   return (
-    <li>
+    <li className={task.completed ? "task-item done" : "task-item"}>
       <input
         type="checkbox"
         checked={task.completed}
         onChange={() => onToggle(task)}
+        aria-label={`Marcar "${task.title}" como completada`}
       />
-      <span style={{ textDecoration: task.completed ? "line-through" : "none" }}>
-        <strong>{task.title}</strong>
-        {task.description && ` — ${task.description}`}
-      </span>
-      <button onClick={() => setEditing(true)}>Editar</button>
-      <button onClick={() => onDelete(task.id)}>Eliminar</button>
+      <div className="task-content">
+        <strong className="task-title">{task.title}</strong>
+        {task.description && (
+          <span className="task-description">{task.description}</span>
+        )}
+      </div>
+      <div className="task-actions">
+        <button className="btn btn-secondary btn-small" onClick={() => setEditing(true)}>
+          Editar
+        </button>
+        <button className="btn btn-danger btn-small" onClick={() => onDelete(task.id)}>
+          Eliminar
+        </button>
+      </div>
     </li>
   );
 }
 
 export function TaskList({ tasks, onToggle, onDelete, onEdit }: TaskListProps) {
   if (tasks.length === 0) {
-    return <p>No tienes tareas todavía.</p>;
+    return <p className="empty">No tienes tareas todavía.</p>;
   }
 
   return (
-    <ul>
+    <ul className="task-list">
       {tasks.map((task) => (
         <TaskItem
           key={task.id}

@@ -1,9 +1,8 @@
 import { useState } from "react";
+import type { SyntheticEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import type { SyntheticEvent } from "react";
 import { getErrorMessage, getErrorCode } from "../utils/authErrors";
-
 
 export function Login() {
   const [email, setEmail] = useState("");
@@ -14,7 +13,7 @@ export function Login() {
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
- const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -23,8 +22,8 @@ export function Login() {
       await login(email, password);
       navigate("/tasks");
     } catch (err) {
-  setError(getErrorMessage(getErrorCode(err)));
-} finally {
+      setError(getErrorMessage(getErrorCode(err)));
+    } finally {
       setLoading(false);
     }
   };
@@ -35,45 +34,61 @@ export function Login() {
     try {
       await loginWithGoogle();
       navigate("/tasks");
-   } catch (err) {
-  setError(getErrorMessage(getErrorCode(err)));
-} finally {
+    } catch (err) {
+      setError(getErrorMessage(getErrorCode(err)));
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h1>Iniciar sesión</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" disabled={loading}>
-          {loading ? "Ingresando..." : "Ingresar"}
+    <main className="auth-page">
+      <div className="card auth-card">
+        <h1>Iniciar sesión</h1>
+        <p className="subtitle">Accede para gestionar tus tareas</p>
+
+        <form className="form" onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && (
+            <p className="message error" role="alert">
+              {error}
+            </p>
+          )}
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? "Ingresando..." : "Ingresar"}
+          </button>
+        </form>
+
+        <div className="divider">
+          <span>o</span>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+        >
+          Ingresar con Google
         </button>
-      </form>
 
-      <button onClick={handleGoogleLogin} disabled={loading}>
-        Ingresar con Google
-      </button>
-
-      <p>
-        ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
-      </p>
-    </div>
+        <p className="auth-footer">
+          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+        </p>
+      </div>
+    </main>
   );
 }
-

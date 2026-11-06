@@ -25,7 +25,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="task-form" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Título de la tarea"
@@ -39,7 +39,7 @@ export function TaskForm({ onAdd }: TaskFormProps) {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <button type="submit" disabled={submitting}>
+      <button type="submit" className="btn btn-primary" disabled={submitting}>
         {submitting ? "Agregando..." : "Agregar tarea"}
       </button>
     </form>
