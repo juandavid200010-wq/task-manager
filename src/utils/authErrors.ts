@@ -16,3 +16,11 @@ export function getErrorMessage(code: string): string {
       return "Ocurrió un error. Intenta de nuevo.";
   }
 }
+
+export function getErrorCode(error: unknown): string {
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const code = (error as { code: unknown }).code;
+    if (typeof code === "string") return code;
+  }
+  return "";
+}

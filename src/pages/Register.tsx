@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import type { SyntheticEvent } from "react";
-import { getErrorMessage } from "../utils/authErrors";
+import { getErrorMessage, getErrorCode } from "../utils/authErrors";
 
 export function Register() {
   const [email, setEmail] = useState("");
@@ -21,9 +21,9 @@ const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     try {
       await register(email, password);
       navigate("/tasks");
-    } catch (err: any) {
-      setError(getErrorMessage(err.code));
-    } finally {
+    } catch (err) {
+  setError(getErrorMessage(getErrorCode(err)));
+}finally {
       setLoading(false);
     }
   };
